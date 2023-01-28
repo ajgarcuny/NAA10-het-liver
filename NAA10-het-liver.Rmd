@@ -1,0 +1,209 @@
+---
+title: "NAA10 het liver"
+author: "Andrew Garcia"
+date: "2023-01-28"
+output: html_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+#liver data
+##stats and summary stats
+```{r}
+liver <- read.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vTLmgeuvv-9LZ7wmye300YHyft6hknpdF9volz23xEZENyhRra1DKxfLPytpTQnRd7s7LN2CgI5ZGsu/pub?gid=0&single=true&output=csv", header = T)
+
+head(liver)
+```
+```{r}
+liver$Name <- as.factor(liver$Name)
+liver$Genotype <- as.factor(liver$Genotype)
+liver$Replicate <- as.factor (liver$Replicate)
+
+head(liver)
+```
+
+
+```{r}
+install.packages("Rmisc",repos = "http://cran.us.r-project.org")
+```
+
+```{r}
+##Summary statistics for Normalized NAA10 signal, grouped by genotype and technical replicate
+##Replicate grouping pertains to replicate blot grouping
+
+library(Rmisc)
+liver_sum <- summarySE(liver, measurevar="Normalized.Signal", groupvars=c("Genotype","Replicate"))
+
+liver_sum
+```
+
+```{r}
+##Summary statistics for Normalized NAA10 signal, grouped by genotype and technical replicate
+##Replicate grouping pertains to replicate blot grouping
+
+library(Rmisc)
+liver_sum1 <- summarySE(liver, measurevar="Normalized.Signal", groupvars=c("Genotype"))
+
+liver_sum1
+```
+
+
+```{r}
+install.packages("ggplot2", repos = "http://cran.us.r-project.org")
+```
+
+
+
+```{r}
+#group means plus standards
+#essentially looking to plot this onto the individual data plot
+
+library(ggplot2)
+ggplot(liver_sum1, aes(x = Genotype, y = Normalized.Signal))+
+  geom_point()+
+  geom_errorbar(aes(ymin = Normalized.Signal - sd,
+                ymax = Normalized.Signal + sd))
+```
+
+
+```{r}
+#ggplot(heart) plots Normalized.Signal as a function of Genotype
+#geom_point plots individual observations on this plot
+#geom_errorbar points to my group means df heart_sum1 and the bounds of the mean+/- standard error bar
+#the successive geom_point plots the mean; specify color so it does not conflict with the color call in the first geom_point
+
+ggplot(liver,aes(x = Genotype,
+                 y = Normalized.Signal))+
+  geom_point(aes(color = Name,
+                 shape = Replicate),
+             alpha = 1.0)+
+  geom_errorbar(data = liver_sum1,
+                aes(ymin = Normalized.Signal-sd,
+                    ymax = Normalized.Signal+sd,
+                    width = 0.2))+
+  geom_point(data = liver_sum1,
+             size = 0.4,
+             alpha = 1.0,
+             color = "red")+
+  xlab("Naa10 genotype")+
+  ylab("NAA10 signal normalized to
+       REVERT total protein stain")
+```
+
+
+
+#hypothesis testing
+##unpaired t-test
+null hypothesis: there is no mean difference in NAA10 signal between Naa10 female
+genotypes
+
+Alternative: there is a difference in NAA10 signal between Naa10 female genotypes
+```{r}
+##Unpaired t-test of NAA10 signal grouped by Genotype
+t.test(liver$Normalized.Signal~liver$Genotype,
+       paired = F,
+       var.equal = F)
+```
+
+
+##paired t-test of NAA10 signal between replicates of individual animals
+Null hypothesis: there is no difference in NAA10 signal of individual hearts on replicate blots
+Alternative hypothesis: there is a difference in NAA10 signal of individual hearts on replicate blots
+
+
+#earlier dataset with C57 females as inbred strain controls
+
+```{r}
+liver_c57 <- read.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vSOj04z27d0l76VXIjCAsvYw_0hn0_JUnmxJmXN6R0kuVZA3RytBDzfvBUv5WcNUg/pub?gid=788568614&single=true&output=csv",header = T)
+
+head(liver_c57)
+```
+
+```{r}
+liver_c57$Name <- as.factor(liver_c57$Name)
+liver_c57$Genotype <- as.factor(liver_c57$Genotype)
+liver_c57$Replicate <- as.factor (liver_c57$Replicate)
+
+head(liver_c57)
+```
+```{r}
+library(Rmisc)
+liver_c57_sum <- summarySE(liver_c57, measurevar="Normalized.Signal", groupvars=c("Genotype"))
+
+liver_c57_sum
+```
+```{r}
+ggplot(liver_c57,aes(x = Genotype,
+                 y = Normalized.Signal))+
+  geom_point(aes(color = Name,
+                 shape = Replicate),
+             alpha = 1.0)+
+  geom_errorbar(data = liver_c57_sum,
+                aes(ymin = Normalized.Signal-sd,
+                    ymax = Normalized.Signal+sd,
+                    width = 0.2))+
+  geom_point(data = liver_c57_sum,
+             size = 0.4,
+             alpha = 1.0,
+             color = "red")+
+  xlab("Naa10 genotype")+
+  ylab("NAA10 signal normalized to
+       REVERT total protein stain")
+```
+
+
+```{r}
+##Plotted by biological replicate
+
+ggplot(liver_c57, aes(x = Name,
+                  y = Normalized.Signal,
+                  shape = Replicate,
+                  color = Genotype))+
+         geom_point()+
+  xlab("sample ID")+
+  ylab("NAA10 signal normalized to
+       REVERT total protein stain")+
+   ggtitle("NAA10 levels in Naa10
+          heterozygous mutant liver")
+
+##verify genotypes of 4942 and 4924 (may be flipped in source data)
+```
+
+```{r}
+t.test(liver_c57$Normalized.Signal~liver_c57$Genotype,
+       paired = F,
+       var.equal = F)
+```
+2-sample t-test indicates there is no significant difference in NAA10 signal
+between genotypes; however, the means are non-equal.
+
+
+```{r}
+t.test(liver_c57$Normalized.Signal~liver_c57$Replicate,
+       paired = T,
+       var.equal = F)
+```
+Paired t-test indicates there is a significant difference between biological
+replicates on replicate blots. First I will analyze based on Replicate.
+Paired t-test already indicates there are differences between replicates so I
+don't necessarily need to do post-hoc testing. However, I will use a Tukey-Kramer
+test.
+
+If I include more variables in my model (Replicate, Genotype) that drive changes in
+Normalized.Signal, I can use post-hoc testing to specify which
+biological replicates differ.
+
+For later reference: just re-run the samples again (ideally from new aliquots).
+
+However, the samples for this dataset have been used up.
+
+```{r}
+liver_c57_aov <- aov(Normalized.Signal~Replicate,liver_c57)
+
+summary(liver_c57_aov)
+TukeyHSD(liver_c57_aov, conf.level = 0.95)
+```
