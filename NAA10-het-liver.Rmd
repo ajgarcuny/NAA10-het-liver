@@ -81,7 +81,7 @@ ggplot(liver,aes(x = Genotype,
                  y = Normalized.Signal))+
   geom_point(aes(color = Name,
                  shape = Replicate),
-             alpha = 1.0)+
+             alpha = 0.5)+
   geom_errorbar(data = liver_sum1,
                 aes(ymin = Normalized.Signal-sd,
                     ymax = Normalized.Signal+sd,
@@ -93,8 +93,7 @@ ggplot(liver,aes(x = Genotype,
   xlab("Naa10 genotype")+
   ylab("NAA10 signal normalized to
        REVERT total protein stain")+
-  ggtitle("NAA10 levels in
-          Naa10 heterozygous mutant liver")
+  ggtitle("")
 ```
 
 
