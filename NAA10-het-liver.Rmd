@@ -76,6 +76,7 @@ ggplot(liver_sum1, aes(x = Genotype, y = Normalized.Signal))+
 #geom_errorbar points to my group means df heart_sum1 and the bounds of the mean+/- standard error bar
 #the successive geom_point plots the mean; specify color so it does not conflict with the color call in the first geom_point
 
+library(ggplot2)
 ggplot(liver,aes(x = Genotype,
                  y = Normalized.Signal))+
   geom_point(aes(color = Name,
@@ -91,7 +92,9 @@ ggplot(liver,aes(x = Genotype,
              color = "red")+
   xlab("Naa10 genotype")+
   ylab("NAA10 signal normalized to
-       REVERT total protein stain")
+       REVERT total protein stain")+
+  ggtitle("NAA10 levels in
+          Naa10 heterozygous mutant liver")
 ```
 
 
@@ -152,7 +155,9 @@ ggplot(liver_c57,aes(x = Genotype,
              color = "red")+
   xlab("Naa10 genotype")+
   ylab("NAA10 signal normalized to
-       REVERT total protein stain")
+       REVERT total protein stain")+
+  ggtitle("NAA10 levels in Naa10 heterozygous mutant
+          and inbred control liver")
 ```
 
 
