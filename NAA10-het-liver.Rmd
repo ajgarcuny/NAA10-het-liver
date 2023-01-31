@@ -139,6 +139,12 @@ liver_c57_sum <- summarySE(liver_c57, measurevar="Normalized.Signal", groupvars=
 
 liver_c57_sum
 ```
+
+```{r}
+library(ggplot2)
+```
+
+
 ```{r}
 ggplot(liver_c57,aes(x = Genotype,
                  y = Normalized.Signal))+
@@ -156,8 +162,7 @@ ggplot(liver_c57,aes(x = Genotype,
   xlab("Naa10 genotype")+
   ylab("NAA10 signal normalized to
        REVERT total protein stain")+
-  ggtitle("NAA10 levels in Naa10 heterozygous mutant
-          and inbred control liver")
+  ggtitle("")
 ```
 
 
@@ -192,14 +197,16 @@ t.test(liver_c57$Normalized.Signal~liver_c57$Replicate,
        paired = T,
        var.equal = F)
 ```
+
 Paired t-test indicates there is a significant difference between biological
 replicates on replicate blots. First I will analyze based on Replicate.
 Paired t-test already indicates there are differences between replicates so I
-don't necessarily need to do post-hoc testing. However, I will use a Tukey-Kramer
+don't necessarily need to do post-hoc testing. However, I will use a
+Tukey-Kramer
 test.
 
-If I include more variables in my model (Replicate, Genotype) that drive changes in
-Normalized.Signal, I can use post-hoc testing to specify which
+If I include more variables in my model (Replicate, Genotype) that drive changes
+in Normalized.Signal, I can use post-hoc testing to specify which
 biological replicates differ.
 
 For later reference: just re-run the samples again (ideally from new aliquots).
