@@ -219,8 +219,14 @@ kruskal.test(Normalized.Signal~Replicate,liver)
 
 
 ###does median NAA10 signal differ?
+
 ```{r}
-mood.test(Normalized.Signal~Genotype,liver)
+install.packages("coin",repos = "http://cran.us.r-project.org")
+```
+
+```{r}
+library(coin)
+mood_test(Normalized.Signal~Genotype,liver)
 ```
 
 
