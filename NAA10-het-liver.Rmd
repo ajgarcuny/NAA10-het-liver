@@ -59,7 +59,7 @@ install.packages("ggplot2", repos = "http://cran.us.r-project.org")
 
 
 ```{r}
-#group means plus standards
+#group means plus standard deviations come from summary stat dataframe
 #essentially looking to plot this onto the individual data plot
 
 library(ggplot2)
@@ -79,13 +79,16 @@ ggplot(liver_sum1, aes(x = Genotype, y = Normalized.Signal))+
 library(ggplot2)
 ggplot(liver,aes(x = Genotype,
                  y = Normalized.Signal))+
-  geom_point(aes(color = Name,
+  geom_jitter(aes(color = Name,
                  shape = Replicate),
-             alpha = 0.5)+
+             alpha = 0.75)+
+  geom_boxplot(outlier.shape = NULL)+
+  stat_summary(fun.y=mean, geom="point",
+               shape=20, size=14, color="red", fill="red")+
   geom_errorbar(data = liver_sum1,
                 aes(ymin = Normalized.Signal-sd,
                     ymax = Normalized.Signal+sd,
-                    width = 0.2))+
+                    width = 0.25))+
   geom_point(data = liver_sum1,
              size = 0.4,
              alpha = 1.0,
@@ -155,7 +158,7 @@ ggplot(liver_c57,aes(x = Genotype,
                     ymax = Normalized.Signal+sd,
                     width = 0.2))+
   geom_point(data = liver_c57_sum,
-             size = 0.4,
+             size = 1,
              alpha = 1.0,
              color = "red")+
   xlab("Naa10 genotype")+
