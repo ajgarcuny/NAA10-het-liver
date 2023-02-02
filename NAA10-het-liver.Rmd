@@ -69,30 +69,74 @@ ggplot(liver_sum1, aes(x = Genotype, y = Normalized.Signal))+
                 ymax = Normalized.Signal + sd))
 ```
 
-
+##plot with points and group means
 ```{r}
 #ggplot(heart) plots Normalized.Signal as a function of Genotype
 #geom_point plots individual observations on this plot
+#individual data points may need to be jittered
 #geom_errorbar points to my group means df heart_sum1 and the bounds of the mean+/- standard error bar
-#the successive geom_point plots the mean; specify color so it does not conflict with the color call in the first geom_point
+#mean is plotted via stat_summary
 
 library(ggplot2)
 ggplot(liver,aes(x = Genotype,
                  y = Normalized.Signal))+
-  geom_jitter(aes(color = Name,
+  geom_point(aes(color = Name,
                  shape = Replicate),
-             alpha = 0.75)+
-  geom_boxplot(outlier.shape = NULL)+
-  stat_summary(fun.y=mean, geom="point",
-               shape=20, size=14, color="red", fill="red")+
+             alpha = 1)+
+  stat_summary(fun= mean, geom="point",
+               shape=3, size=5, color="black", fill="black")+
   geom_errorbar(data = liver_sum1,
                 aes(ymin = Normalized.Signal-sd,
                     ymax = Normalized.Signal+sd,
                     width = 0.25))+
-  geom_point(data = liver_sum1,
-             size = 0.4,
-             alpha = 1.0,
-             color = "red")+
+  xlab("Naa10 genotype")+
+  ylab("NAA10 signal normalized to
+       REVERT total protein stain")+
+  ggtitle("")
+```
+
+
+
+```{r}
+ggplot(liver,aes(x = Genotype,
+                 y = Normalized.Signal))+
+  stat_summary(fun= mean, geom="point",
+               shape=3, size=5, color="red", fill="black")+
+  geom_errorbar(data = liver_sum1,
+                aes(ymin = Normalized.Signal-sd,
+                    ymax = Normalized.Signal+sd,
+                    width = 0.25))+
+  geom_boxplot(outlier.shape = NA,
+               alpha = 0.1)+
+  geom_point(aes(color = Name,
+                 shape = Replicate),
+             alpha = 1,
+                 position = position_jitterdodge())+
+  xlab("Naa10 genotype")+
+  ylab("NAA10 signal normalized to
+       REVERT total protein stain")+
+  ggtitle("")
+```
+
+
+##jittered plot
+```{r}
+#same plot as above, but with jittered poitns
+
+ggplot(liver,aes(x = Genotype,
+                 y = Normalized.Signal))+
+  geom_jitter(aes(color = Name,
+                 shape = Replicate),
+              size = 2,
+             alpha = 1,)+
+  geom_boxplot(outlier.shape = NA,
+               alpha = 0.1)+
+  stat_summary(fun= mean, geom="point",
+               shape=3, size=5,stroke = 1,color="red", fill="black")+
+  geom_errorbar(data = liver_sum1,
+                aes(ymin = Normalized.Signal-sd,
+                    ymax = Normalized.Signal+sd,
+                    width = 0.25))+
   xlab("Naa10 genotype")+
   ylab("NAA10 signal normalized to
        REVERT total protein stain")+
