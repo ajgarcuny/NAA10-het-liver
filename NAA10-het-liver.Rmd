@@ -19,6 +19,7 @@ liver <- read.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vTLmgeuvv-9LZ
 head(liver)
 ```
 ```{r}
+liver$ID <-as.factor(liver$ID)
 liver$Name <- as.factor(liver$Name)
 liver$Genotype <- as.factor(liver$Genotype)
 liver$Replicate <- as.factor (liver$Replicate)
@@ -69,7 +70,7 @@ ggplot(liver_sum1, aes(x = Genotype, y = Normalized.Signal))+
                 ymax = Normalized.Signal + sd))
 ```
 
-##plot with points and group means
+##plot with points and group means 
 ```{r}
 #ggplot(heart) plots Normalized.Signal as a function of Genotype
 #geom_point plots individual observations on this plot
@@ -80,7 +81,7 @@ ggplot(liver_sum1, aes(x = Genotype, y = Normalized.Signal))+
 library(ggplot2)
 ggplot(liver,aes(x = Genotype,
                  y = Normalized.Signal))+
-  geom_point(aes(color = Name,
+  geom_point(aes(color = ID,
                  shape = Replicate),
              alpha = 1)+
   stat_summary(fun= mean, geom="point",
@@ -89,6 +90,28 @@ ggplot(liver,aes(x = Genotype,
                 aes(ymin = Normalized.Signal-sd,
                     ymax = Normalized.Signal+sd,
                     width = 0.25))+
+  xlab("Naa10 genotype")+
+  ylab("NAA10 signal normalized to
+       REVERT total protein stain")+
+  ggtitle("")
+```
+
+
+```{r}
+ggplot(liver,aes(x = Genotype,
+                 y = Normalized.Signal))+
+  stat_summary(fun= mean, geom="point",
+               shape=3, size=5, color="red", fill="black")+
+  geom_errorbar(data = liver_sum1,
+                aes(ymin = Normalized.Signal-sd,
+                    ymax = Normalized.Signal+sd,
+                    width = 0.25))+
+    geom_boxplot(outlier.shape = NA,
+               alpha = 0.1)+
+  geom_point(aes(color = Name,
+                 shape = Replicate),
+             alpha = 1,
+                 position = position_jitterdodge())+
   xlab("Naa10 genotype")+
   ylab("NAA10 signal normalized to
        REVERT total protein stain")+
@@ -106,9 +129,7 @@ ggplot(liver,aes(x = Genotype,
                 aes(ymin = Normalized.Signal-sd,
                     ymax = Normalized.Signal+sd,
                     width = 0.25))+
-  geom_boxplot(outlier.shape = NA,
-               alpha = 0.1)+
-  geom_point(aes(color = Name,
+  geom_point(aes(color = ID,
                  shape = Replicate),
              alpha = 1,
                  position = position_jitterdodge())+
@@ -125,10 +146,10 @@ ggplot(liver,aes(x = Genotype,
 
 ggplot(liver,aes(x = Genotype,
                  y = Normalized.Signal))+
-  geom_jitter(aes(color = Name,
+  geom_point(aes(color = ID,
                  shape = Replicate),
-              size = 2,
-             alpha = 1,)+
+             alpha = 1,
+                 position = position_jitterdodge())+
   geom_boxplot(outlier.shape = NA,
                alpha = 0.1)+
   stat_summary(fun= mean, geom="point",
@@ -146,7 +167,8 @@ ggplot(liver,aes(x = Genotype,
 
 
 #hypothesis testing
-##unpaired t-test
+##parametric
+###two-sample t-test
 null hypothesis: there is no mean difference in NAA10 signal between Naa10 female
 genotypes
 
@@ -158,10 +180,48 @@ t.test(liver$Normalized.Signal~liver$Genotype,
        var.equal = F)
 ```
 
+I fail to reject the null hypothesis
 
-##paired t-test of NAA10 signal between replicates of individual animals
+###differences between replicates
 Null hypothesis: there is no difference in NAA10 signal of individual hearts on replicate blots
 Alternative hypothesis: there is a difference in NAA10 signal of individual hearts on replicate blots
+
+
+```{r}
+install.packages("car",repos = "http://cran.us.r-project.org")
+```
+
+```{r}
+library(car)
+liver.aov <- lm(Normalized.Signal~Replicate, liver)
+summary(liver.aov)
+Anova(liver.aov,type = "III")
+
+```
+
+##non-parametric testing
+###NAA10 signal and Genotype
+I have a big outlier in each genotype, so I will perform
+non-parametric hypothesis tests.
+
+```{r}
+#Wilcox test instead of Welch's test
+wilcox.test(Normalized.Signal~Genotype,liver)
+```
+
+p = 0.06253; I fail to reject the null hypothesis.
+
+
+###Does replicate blot drive differences in NAA10 signal
+```{r}
+kruskal.test(Normalized.Signal~Replicate,liver)
+```
+
+
+###does median NAA10 signal differ?
+```{r}
+mood.test(Normalized.Signal~Genotype,liver)
+```
 
 
 #earlier dataset with C57 females as inbred strain controls
