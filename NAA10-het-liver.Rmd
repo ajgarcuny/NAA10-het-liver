@@ -78,7 +78,6 @@ ggplot(liver_sum1, aes(x = Genotype, y = Normalized.Signal))+
 #geom_errorbar points to my group means df heart_sum1 and the bounds of the mean+/- standard error bar
 #mean is plotted via stat_summary
 
-library(ggplot2)
 ggplot(liver,aes(x = Genotype,
                  y = Normalized.Signal))+
   geom_point(aes(color = ID,
@@ -141,14 +140,16 @@ ggplot(liver,aes(x = Genotype,
 
 
 ##jittered plot
+
+
 ```{r}
 #same plot as above, but with jittered poitns
-
 ggplot(liver,aes(x = Genotype,
                  y = Normalized.Signal))+
   geom_point(aes(color = ID,
                  shape = Replicate),
              alpha = 1,
+             size = 2,
                  position = position_jitterdodge())+
   geom_boxplot(outlier.shape = NA,
                alpha = 0.1)+
