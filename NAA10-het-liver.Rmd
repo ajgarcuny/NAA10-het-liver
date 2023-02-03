@@ -143,8 +143,9 @@ ggplot(liver,aes(x = Genotype,
 
 
 ```{r}
-#same plot as above, but with jittered poitns
-ggplot(liver,aes(x = Genotype,
+#same plot as above, but with jittered points
+library(ggplot2)
+liver.fig <- ggplot(liver,aes(x = Genotype,
                  y = Normalized.Signal))+
   geom_point(aes(color = ID,
                  shape = Replicate),
@@ -162,7 +163,9 @@ ggplot(liver,aes(x = Genotype,
   xlab("Naa10 genotype")+
   ylab("NAA10 signal normalized to
        REVERT total protein stain")+
-  ggtitle("")
+  theme_bw(base_size = 12, base_family = "Helvetica")
+
+liver.fig
 ```
 
 
