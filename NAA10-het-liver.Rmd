@@ -11,8 +11,8 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
-#liver data
-##stats and summary stats
+# liver data
+## stats and summary stats
 ```{r}
 liver <- read.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vTLmgeuvv-9LZ7wmye300YHyft6hknpdF9volz23xEZENyhRra1DKxfLPytpTQnRd7s7LN2CgI5ZGsu/pub?gid=0&single=true&output=csv", header = T)
 
@@ -70,7 +70,7 @@ ggplot(liver_sum1, aes(x = Genotype, y = Normalized.Signal))+
                 ymax = Normalized.Signal + sd))
 ```
 
-##plot with points and group means 
+## plot with points and group means 
 ```{r}
 #ggplot(heart) plots Normalized.Signal as a function of Genotype
 #geom_point plots individual observations on this plot
@@ -139,7 +139,7 @@ ggplot(liver,aes(x = Genotype,
 ```
 
 
-##jittered plot
+## jittered plot
 
 
 ```{r}
@@ -170,9 +170,9 @@ liver.fig
 
 
 
-#hypothesis testing
-##parametric
-###two-sample t-test
+# hypothesis testing
+## parametric
+### two-sample t-test
 null hypothesis: there is no mean difference in NAA10 signal between Naa10 female
 genotypes
 
@@ -186,7 +186,7 @@ t.test(liver$Normalized.Signal~liver$Genotype,
 
 I fail to reject the null hypothesis
 
-###differences between replicates
+### differences between replicates
 Null hypothesis: there is no difference in NAA10 signal of individual hearts on replicate blots
 Alternative hypothesis: there is a difference in NAA10 signal of individual hearts on replicate blots
 
@@ -203,8 +203,8 @@ Anova(liver.aov,type = "III")
 
 ```
 
-##non-parametric testing
-###NAA10 signal and Genotype
+# #non-parametric testing
+### NAA10 signal and Genotype
 I have a big outlier in each genotype, so I will perform
 non-parametric hypothesis tests.
 
@@ -216,13 +216,13 @@ wilcox.test(Normalized.Signal~Genotype,liver)
 p = 0.06253; I fail to reject the null hypothesis.
 
 
-###Does replicate blot drive differences in NAA10 signal
+### Does replicate blot drive differences in NAA10 signal
 ```{r}
 kruskal.test(Normalized.Signal~Replicate,liver)
 ```
 
 
-###does median NAA10 signal differ?
+### does median NAA10 signal differ?
 
 ```{r}
 install.packages("coin",repos = "http://cran.us.r-project.org")
@@ -234,7 +234,7 @@ mood_test(Normalized.Signal~Genotype,liver)
 ```
 
 
-#earlier dataset with C57 females as inbred strain controls
+# earlier dataset with C57 females as inbred strain controls
 
 ```{r}
 liver_c57 <- read.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vSOj04z27d0l76VXIjCAsvYw_0hn0_JUnmxJmXN6R0kuVZA3RytBDzfvBUv5WcNUg/pub?gid=788568614&single=true&output=csv",header = T)
@@ -262,23 +262,27 @@ library(ggplot2)
 
 
 ```{r}
-ggplot(liver_c57,aes(x = Genotype,
+c57_fig <- ggplot(liver_c57,aes(x = Genotype,
                  y = Normalized.Signal))+
-  geom_point(aes(color = Name,
-                 shape = Replicate),
-             alpha = 1.0)+
+  geom_point(aes(shape = Replicate),
+             alpha = 1.0,
+             position = position_jitterdodge())+
+  geom_boxplot(outlier.shape = NA,
+               alpha = 0.1)+
+  stat_summary(fun = mean, color = "black",
+               position = position_dodge(0.75),width = 0.2,
+             geom = "crossbar",
+             show.legend = FALSE)+
   geom_errorbar(data = liver_c57_sum,
                 aes(ymin = Normalized.Signal-sd,
                     ymax = Normalized.Signal+sd,
                     width = 0.2))+
-  geom_point(data = liver_c57_sum,
-             size = 1,
-             alpha = 1.0,
-             color = "red")+
   xlab("Naa10 genotype")+
   ylab("NAA10 signal normalized to
        REVERT total protein stain")+
   ggtitle("")
+
+c57_fig
 ```
 
 
