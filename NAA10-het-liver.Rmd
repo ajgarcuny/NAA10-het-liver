@@ -262,6 +262,8 @@ library(ggplot2)
 
 
 ```{r}
+library(ggplot2)
+
 c57_fig <- ggplot(liver_c57,aes(x = Genotype,
                  y = Normalized.Signal))+
   geom_point(aes(shape = Replicate),
@@ -280,7 +282,7 @@ c57_fig <- ggplot(liver_c57,aes(x = Genotype,
   xlab("Naa10 genotype")+
   ylab("NAA10 signal normalized to
        REVERT total protein stain")+
-  ggtitle("")
+  ggtitle("")+theme_bw(base_size =12, base_family = "Helvetica")
 
 c57_fig
 ```
